@@ -70,3 +70,7 @@ func (ur *UserRepository) GetRepo(ctx context.Context, opts ...any) (entity.User
 
 	return user, nil
 }
+
+func (ur *UserRepository) UpdateSettingsRepo(ctx context.Context, userID int32, wallpaper, customURL, theme string) error {
+	return ur.UserDAO.UpdateSettings(ctx, userID, wallpaper, customURL, theme)
+}

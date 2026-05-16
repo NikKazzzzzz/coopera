@@ -20,6 +20,7 @@ type Config struct {
 	DBSchema                  string
 	AssignmentsWorkerInterval time.Duration
 	TaskMinAge                time.Duration
+	TelegramBotToken          string
 }
 
 func LoadConfig(envPath string) *Config {
@@ -59,6 +60,7 @@ func LoadConfig(envPath string) *Config {
 		DBSchema:                  getEnv("DB_SCHEMA", "coopera"),
 		AssignmentsWorkerInterval: interval,
 		TaskMinAge:                taskMinAge,
+		TelegramBotToken:          getEnv("TELEGRAM_BOT_TOKEN", ""),
 	}
 }
 

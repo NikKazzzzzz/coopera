@@ -14,4 +14,7 @@ type Task struct {
 	CreatedByMember int32      `db:"created_by_member"`
 	CreatedAt       *time.Time `db:"created_at"`
 	UpdatedAt       *time.Time `db:"updated_at"`
+	Tags            []string   `db:"tags"`
+	Priority        string     `db:"priority"`
+	CommentCount    int32      `db:"comment_count"`
 }

@@ -18,6 +18,7 @@ type UserRepository interface {
 	CreateRepo(ctx context.Context, euser entity.UserEntity) (entity.UserEntity, error)
 	DeleteRepo(ctx context.Context, userID int32) error
 	GetRepo(ctx context.Context, opts ...any) (entity.UserEntity, error)
+	UpdateSettingsRepo(ctx context.Context, userID int32, wallpaper, customURL, theme string) error
 }
 
 type TeamRepository interface {
@@ -26,6 +27,9 @@ type TeamRepository interface {
 	GetByIDRepo(ctx context.Context, teamID int32) (entity.TeamEntity, error)
 	ExistsByName(ctx context.Context, name string) (bool, error)
 	ExistsByID(ctx context.Context, teamID int32) (bool, error)
+	UpdateMetaRepo(ctx context.Context, teamID int32, emoji, color string) error
+	UpdateAutoassignRepo(ctx context.Context, teamID int32, autoassign bool) error
+	UpdatePhotoURLRepo(ctx context.Context, teamID int32, photoURL string) error
 }
 
 type MembershipRepository interface {
@@ -45,4 +49,18 @@ type TaskRepository interface {
 	DeleteRepo(ctx context.Context, taskID int32) error
 	UpdateRepo(ctx context.Context, task entity.UpdateTask) error
 	GetAllTasks(ctx context.Context) ([]entity.Task, error)
+}
+
+type TaskCommentRepository interface {
+	GetByTaskIDRepo(ctx context.Context, taskID int32) ([]entity.TaskComment, error)
+	CreateRepo(ctx context.Context, c entity.TaskComment) (entity.TaskComment, error)
+	DeleteRepo(ctx context.Context, id int32, userID int32) error
+}
+
+type ActivityRepository interface {
+	CreateRepo(ctx context.Context, a entity.ActivityEntry) (entity.ActivityEntry, error)
+	GetByUserIDRepo(ctx context.Context, userID int32) ([]entity.ActivityEntry, error)
+	MarkAllReadRepo(ctx context.Context, userID int32) error
+	MarkSingleReadRepo(ctx context.Context, id int32, userID int32) error
+	DeleteAllRepo(ctx context.Context, userID int32) error
 }

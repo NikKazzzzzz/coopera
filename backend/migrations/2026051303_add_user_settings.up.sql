@@ -1,0 +1,6 @@
+BEGIN;
+ALTER TABLE coopera.users
+  ADD COLUMN wallpaper VARCHAR(50) NOT NULL DEFAULT 'none',
+  ADD COLUMN wallpaper_custom_url TEXT NOT NULL DEFAULT '',
+  ADD COLUMN theme VARCHAR(10) NOT NULL DEFAULT 'light';
+COMMIT;

@@ -14,6 +14,9 @@ type Task struct {
 	CreatedByUserID   int32
 	CreatedAt         *time.Time
 	UpdatedAt         *time.Time
+	Tags              []string
+	Priority          string
+	CommentCount      int32
 }
 type TaskFilter struct {
 	TaskID   int32
@@ -33,4 +36,6 @@ type UpdateTask struct {
 	Description      *string
 	Points           *int32
 	AssignedToMember *int32
+	Tags             *[]string
+	Priority         *string
 }

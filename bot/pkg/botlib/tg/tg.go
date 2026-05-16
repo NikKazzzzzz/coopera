@@ -8,6 +8,7 @@ import (
 
 type Bot interface {
 	Chat(id int64) Chat
+	UserPhotoURL(ctx context.Context, userID int64) (string, error)
 }
 
 type Chat interface {

@@ -30,7 +30,7 @@ func Forms(store keyvalue.Store) forms.Forms {
 }
 
 func Bot(token string) tg.Bot {
-	return tg.NewBot(tgtransport.HTTPClient(token))
+	return tg.NewBot(token, tgtransport.HTTPClient(token))
 }
 
 func Community(s string) domain.Community {

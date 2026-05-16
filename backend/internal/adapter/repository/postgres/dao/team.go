@@ -25,9 +25,9 @@ func NewTeamDAO(db *postgres.DB) *TeamDAO {
 
 func (r *TeamDAO) Create(ctx context.Context, t team_model.Team) (entity.TeamEntity, error) {
 	const query = `
-		INSERT INTO coopera.teams (name, created_by, created_at)
-		VALUES ($1, $2, NOW())
-		RETURNING id, name, created_by, created_at
+		INSERT INTO coopera.teams (name, created_by, emoji, color, autoassign, created_at)
+		VALUES ($1, $2, $3, $4, $5, NOW())
+		RETURNING id, name, created_by, created_at, emoji, color, autoassign, photo_url
 	`
 
 	tx, ok := ctx.Value(postgres.TransactionKey{}).(postgres.Transaction)
@@ -36,15 +36,15 @@ func (r *TeamDAO) Create(ctx context.Context, t team_model.Team) (entity.TeamEnt
 	}
 
 	var created team_model.Team
-	if err := tx.QueryRow(ctx, query, t.Name, t.CreatedBy).Scan(
-		&created.ID, &created.Name, &created.CreatedBy, &created.CreatedAt,
+	if err := tx.QueryRow(ctx, query, t.Name, t.CreatedBy, t.Emoji, t.Color, t.Autoassign).Scan(
+		&created.ID, &created.Name, &created.CreatedBy, &created.CreatedAt, &created.Emoji, &created.Color, &created.Autoassign, &created.PhotoURL,
 	); err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
-			case "23505": // unique_violation
+			case "23505":
 				return entity.TeamEntity{}, repoErr.ErrAlreadyExists
-			case "23503": // foreign_key_violation
+			case "23503":
 				return entity.TeamEntity{}, repoErr.ErrFailCreate
 			}
 		}
@@ -64,7 +64,7 @@ func (r *TeamDAO) Delete(ctx context.Context, teamID int32) error {
 
 	if _, err := tx.Exec(ctx, query, teamID); err != nil {
 		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && pgErr.Code == "23503" { // FK violation
+		if errors.As(err, &pgErr) && pgErr.Code == "23503" {
 			return repoErr.ErrFailDelete
 		}
 		return fmt.Errorf("%w: %v", repoErr.ErrFailDelete, err)
@@ -75,13 +75,13 @@ func (r *TeamDAO) Delete(ctx context.Context, teamID int32) error {
 
 func (r *TeamDAO) GetByID(ctx context.Context, teamID int32) (entity.TeamEntity, error) {
 	const query = `
-		SELECT id, name, created_by, created_at
+		SELECT id, name, created_by, created_at, emoji, color, autoassign, photo_url
 		FROM coopera.teams
 		WHERE id = $1
 	`
 
 	var t team_model.Team
-	err := r.db.Pool.QueryRow(ctx, query, teamID).Scan(&t.ID, &t.Name, &t.CreatedBy, &t.CreatedAt)
+	err := r.db.Pool.QueryRow(ctx, query, teamID).Scan(&t.ID, &t.Name, &t.CreatedBy, &t.CreatedAt, &t.Emoji, &t.Color, &t.Autoassign, &t.PhotoURL)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return entity.TeamEntity{}, repoErr.ErrNotFound
@@ -90,6 +90,51 @@ func (r *TeamDAO) GetByID(ctx context.Context, teamID int32) (entity.TeamEntity,
 	}
 
 	return converter.FromModelToEntityTeam(t), nil
+}
+
+func (r *TeamDAO) UpdateMeta(ctx context.Context, teamID int32, emoji, color string) error {
+	const query = `UPDATE coopera.teams SET emoji = $1, color = $2 WHERE id = $3`
+
+	tx, ok := ctx.Value(postgres.TransactionKey{}).(postgres.Transaction)
+	if !ok {
+		return repoErr.ErrTransactionNotFound
+	}
+
+	if _, err := tx.Exec(ctx, query, emoji, color, teamID); err != nil {
+		return fmt.Errorf("%w: %v", repoErr.ErrFailUpdate, err)
+	}
+
+	return nil
+}
+
+func (r *TeamDAO) UpdateAutoassign(ctx context.Context, teamID int32, autoassign bool) error {
+	const query = `UPDATE coopera.teams SET autoassign = $1 WHERE id = $2`
+
+	tx, ok := ctx.Value(postgres.TransactionKey{}).(postgres.Transaction)
+	if !ok {
+		return repoErr.ErrTransactionNotFound
+	}
+
+	if _, err := tx.Exec(ctx, query, autoassign, teamID); err != nil {
+		return fmt.Errorf("%w: %v", repoErr.ErrFailUpdate, err)
+	}
+
+	return nil
+}
+
+func (r *TeamDAO) UpdatePhotoURL(ctx context.Context, teamID int32, photoURL string) error {
+	const query = `UPDATE coopera.teams SET photo_url = $1 WHERE id = $2`
+
+	tx, ok := ctx.Value(postgres.TransactionKey{}).(postgres.Transaction)
+	if !ok {
+		return repoErr.ErrTransactionNotFound
+	}
+
+	if _, err := tx.Exec(ctx, query, photoURL, teamID); err != nil {
+		return fmt.Errorf("%w: %v", repoErr.ErrFailUpdate, err)
+	}
+
+	return nil
 }
 
 func (r *TeamDAO) ExistsByName(ctx context.Context, name string) (bool, error) {

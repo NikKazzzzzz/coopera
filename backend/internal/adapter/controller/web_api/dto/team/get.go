@@ -15,10 +15,14 @@ type GetTeamResponse struct {
 	CreatedAt     string           `json:"created_at"`
 	CreatedByUser int32            `json:"created_by_user"`
 	Members       []TeamMemberInfo `json:"members"`
+	Emoji         string           `json:"emoji"`
+	Color         string           `json:"color"`
+	Autoassign    bool             `json:"autoassign"`
 }
 
 type TeamMemberInfo struct {
 	MemberID int32       `json:"member_id"`
+	UserID   int32       `json:"user_id"`
 	Username string      `json:"username"`
 	Role     entity.Role `json:"role"`
 }
@@ -35,6 +39,7 @@ func ToGetTeamResponse(team entity.TeamEntity, members []entity.MembershipEntity
 
 		membersInfo = append(membersInfo, TeamMemberInfo{
 			MemberID: m.ID,
+			UserID:   m.UserID,
 			Username: username,
 			Role:     m.Role,
 		})
@@ -46,5 +51,8 @@ func ToGetTeamResponse(team entity.TeamEntity, members []entity.MembershipEntity
 		CreatedAt:     team.CreatedAt.Format(time.RFC3339),
 		CreatedByUser: team.CreatedBy,
 		Members:       membersInfo,
+		Emoji:         team.Emoji,
+		Color:         team.Color,
+		Autoassign:    team.Autoassign,
 	}
 }

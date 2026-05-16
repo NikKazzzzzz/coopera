@@ -1,0 +1,1 @@
+ALTER TABLE coopera.teams ADD COLUMN IF NOT EXISTS photo_url TEXT;

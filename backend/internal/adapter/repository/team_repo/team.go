@@ -35,3 +35,15 @@ func (r *TeamRepository) ExistsByName(ctx context.Context, name string) (bool, e
 func (r *TeamRepository) ExistsByID(ctx context.Context, teamID int32) (bool, error) {
 	return r.dao.ExistsByID(ctx, teamID)
 }
+
+func (r *TeamRepository) UpdateMetaRepo(ctx context.Context, teamID int32, emoji, color string) error {
+	return r.dao.UpdateMeta(ctx, teamID, emoji, color)
+}
+
+func (r *TeamRepository) UpdateAutoassignRepo(ctx context.Context, teamID int32, autoassign bool) error {
+	return r.dao.UpdateAutoassign(ctx, teamID, autoassign)
+}
+
+func (r *TeamRepository) UpdatePhotoURLRepo(ctx context.Context, teamID int32, photoURL string) error {
+	return r.dao.UpdatePhotoURL(ctx, teamID, photoURL)
+}

@@ -132,6 +132,69 @@ func (uc *TeamUsecase) GetByIDUsecase(ctx context.Context, teamID int32) (entity
 	return team, members, usernames, nil
 }
 
+func (uc *TeamUsecase) UpdateMetaUsecase(ctx context.Context, teamID, currentUserID int32, emoji, color string) error {
+	return uc.txManager.WithinTransaction(ctx, func(txCtx context.Context) error {
+		members, err := uc.membershipsUsecase.GetMembersUsecase(txCtx, teamID)
+		if err != nil {
+			return err
+		}
+
+		isMember := false
+		for _, m := range members {
+			if m.UserID == currentUserID {
+				isMember = true
+				break
+			}
+		}
+
+		if !isMember {
+			return appErr.ErrNoPermissionToDelete
+		}
+
+		return uc.teamRepository.UpdateMetaRepo(txCtx, teamID, emoji, color)
+	})
+}
+
+func (uc *TeamUsecase) UpdateAutoassignUsecase(ctx context.Context, teamID, currentUserID int32, autoassign bool) error {
+	return uc.txManager.WithinTransaction(ctx, func(txCtx context.Context) error {
+		members, err := uc.membershipsUsecase.GetMembersUsecase(txCtx, teamID)
+		if err != nil {
+			return err
+		}
+		isMember := false
+		for _, m := range members {
+			if m.UserID == currentUserID {
+				isMember = true
+				break
+			}
+		}
+		if !isMember {
+			return appErr.ErrNoPermissionToDelete
+		}
+		return uc.teamRepository.UpdateAutoassignRepo(txCtx, teamID, autoassign)
+	})
+}
+
+func (uc *TeamUsecase) UpdatePhotoURLUsecase(ctx context.Context, teamID, currentUserID int32, photoURL string) error {
+	return uc.txManager.WithinTransaction(ctx, func(txCtx context.Context) error {
+		members, err := uc.membershipsUsecase.GetMembersUsecase(txCtx, teamID)
+		if err != nil {
+			return err
+		}
+		isMember := false
+		for _, m := range members {
+			if m.UserID == currentUserID {
+				isMember = true
+				break
+			}
+		}
+		if !isMember {
+			return appErr.ErrNoPermissionToDelete
+		}
+		return uc.teamRepository.UpdatePhotoURLRepo(txCtx, teamID, photoURL)
+	})
+}
+
 func (uc *TeamUsecase) ExistTeamByIDUsecase(ctx context.Context, teamID int32) (bool, error) {
 	var exists bool
 	var err error

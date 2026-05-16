@@ -11,6 +11,7 @@ type UserUseCase interface {
 	CreateUsecase(ctx context.Context, euser entity.UserEntity) (entity.UserEntity, error)
 	GetUsecase(ctx context.Context, opts ...any) (entity.UserEntity, error)
 	DeleteUsecase(ctx context.Context, userID int32) error
+	UpdateSettingsUsecase(ctx context.Context, userID int32, wallpaper, customURL, theme string) error
 }
 
 type TeamUseCase interface {
@@ -18,6 +19,9 @@ type TeamUseCase interface {
 	DeleteUsecase(ctx context.Context, teamID, currentUserID int32) error
 	GetByIDUsecase(ctx context.Context, teamID int32) (entity.TeamEntity, []entity.MembershipEntity, map[int32]string, error)
 	ExistTeamByIDUsecase(ctx context.Context, teamID int32) (bool, error)
+	UpdateMetaUsecase(ctx context.Context, teamID, currentUserID int32, emoji, color string) error
+	UpdateAutoassignUsecase(ctx context.Context, teamID, currentUserID int32, autoassign bool) error
+	UpdatePhotoURLUsecase(ctx context.Context, teamID, currentUserID int32, photoURL string) error
 }
 
 type MembershipUseCase interface {
@@ -41,4 +45,18 @@ type TaskUseCase interface {
 
 type TaskAssignmentUsecase interface {
 	AssignTasks(ctx context.Context, taskMinAge time.Duration) error
+}
+
+type TaskCommentUseCase interface {
+	GetByTaskIDUsecase(ctx context.Context, taskID int32) ([]entity.TaskComment, error)
+	CreateUsecase(ctx context.Context, c entity.TaskComment) (entity.TaskComment, error)
+	DeleteUsecase(ctx context.Context, id int32, userID int32) error
+}
+
+type ActivityUseCase interface {
+	CreateUsecase(ctx context.Context, a entity.ActivityEntry) (entity.ActivityEntry, error)
+	GetByUserIDUsecase(ctx context.Context, userID int32) ([]entity.ActivityEntry, error)
+	MarkAllReadUsecase(ctx context.Context, userID int32) error
+	MarkSingleReadUsecase(ctx context.Context, id int32, userID int32) error
+	DeleteAllUsecase(ctx context.Context, userID int32) error
 }
