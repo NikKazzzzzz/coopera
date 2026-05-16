@@ -17,6 +17,8 @@ func FromEntityToModelTask(task entity.Task) taskModel.Task {
 		CreatedByMember: task.CreatedByMemberID,
 		CreatedAt:       task.CreatedAt,
 		UpdatedAt:       task.UpdatedAt,
+		Tags:            task.Tags,
+		Priority:        task.Priority,
 	}
 
 	if task.AssignedToMember != nil {
@@ -25,11 +27,22 @@ func FromEntityToModelTask(task entity.Task) taskModel.Task {
 		mtask.Status = entity.StatusOpen.String()
 	}
 
+	if mtask.Tags == nil {
+		mtask.Tags = []string{}
+	}
+	if mtask.Priority == "" {
+		mtask.Priority = "low"
+	}
+
 	return mtask
 }
 
 func FromModelToEntityTask(m taskModel.Task) entity.Task {
 	status := entity.Status(m.Status)
+	tags := m.Tags
+	if tags == nil {
+		tags = []string{}
+	}
 	return entity.Task{
 		ID:                m.ID,
 		TeamID:            m.TeamID,
@@ -42,6 +55,9 @@ func FromModelToEntityTask(m taskModel.Task) entity.Task {
 		CreatedByMemberID: m.CreatedByMember,
 		CreatedAt:         m.CreatedAt,
 		UpdatedAt:         m.UpdatedAt,
+		Tags:              tags,
+		Priority:          m.Priority,
+		CommentCount:      m.CommentCount,
 	}
 }
 
@@ -59,5 +75,7 @@ func FromEntityToModelUpdateTask(task entity.UpdateTask) taskModel.UpdateTask {
 		Description: task.Description,
 		Points:      task.Points,
 		AssignedTo:  task.AssignedToMember,
+		Tags:        task.Tags,
+		Priority:    task.Priority,
 	}
 }

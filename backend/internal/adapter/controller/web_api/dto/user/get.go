@@ -12,35 +12,47 @@ type GetUserRequest struct {
 }
 
 type TeamInfo struct {
-	ID   int32  `json:"id"`
-	Name string `json:"name"`
-	Role string `json:"role"`
+	ID    int32  `json:"id"`
+	Name  string `json:"name"`
+	Role  string `json:"role"`
+	Emoji string `json:"emoji"`
+	Color string `json:"color"`
 }
 
 type GetUserResponse struct {
-	ID         int32      `json:"id"`
-	TelegramID int64      `json:"telegram_id"`
-	Username   string     `json:"username"`
-	CreatedAt  string     `json:"created_at"`
-	Teams      []TeamInfo `json:"teams"`
+	ID                 int32      `json:"id"`
+	TelegramID         int64      `json:"telegram_id"`
+	Username           string     `json:"username"`
+	PhotoURL           *string    `json:"photo_url,omitempty"`
+	CreatedAt          string     `json:"created_at"`
+	Teams              []TeamInfo `json:"teams"`
+	Wallpaper          string     `json:"wallpaper"`
+	WallpaperCustomURL string     `json:"wallpaper_custom_url"`
+	Theme              string     `json:"theme"`
 }
 
 func ToGetUserResponse(user *entity.UserEntity) *GetUserResponse {
 	teams := make([]TeamInfo, len(user.Teams))
 	for i, t := range user.Teams {
 		teams[i] = TeamInfo{
-			ID:   t.TeamID,
-			Name: t.TeamName,
-			Role: string(t.Role),
+			ID:    t.TeamID,
+			Name:  t.TeamName,
+			Role:  string(t.Role),
+			Emoji: t.TeamEmoji,
+			Color: t.TeamColor,
 		}
 	}
 
 	return &GetUserResponse{
-		ID:         *user.ID,
-		TelegramID: *user.TelegramID,
-		Username:   *user.Username,
-		CreatedAt:  user.CreatedAt.Format("2006-01-02T15:04:05Z"),
-		Teams:      teams,
+		ID:                 *user.ID,
+		TelegramID:         *user.TelegramID,
+		Username:           *user.Username,
+		PhotoURL:           user.PhotoURL,
+		CreatedAt:          user.CreatedAt.Format("2006-01-02T15:04:05Z"),
+		Teams:              teams,
+		Wallpaper:          user.Wallpaper,
+		WallpaperCustomURL: user.WallpaperCustomURL,
+		Theme:              user.Theme,
 	}
 }
 

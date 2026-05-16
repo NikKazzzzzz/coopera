@@ -17,11 +17,11 @@ import (
 	updcond "github.com/NikKazzzzzz/coopera-bot/pkg/botlib/updates/conditions"
 )
 
-func OnboardingBehavior(bot tg.Bot, c domain.Community) hsm.Behavior {
+func OnboardingBehavior(bot tg.Bot, c domain.Community, frontendURL string) hsm.Behavior {
 	return hsm.CoreBehavior(
 		composition.Sequential(
 			domainactions.CreateUser(domain.IdempotencyCommunity(c)),
-			base.SendContent(bot, views.WelcomeMessage()),
+			base.SendContent(bot, views.WelcomeMessage(frontendURL, bot)),
 		),
 		hsm.Just(hsm.Transit("main_menu")),
 		composition.Nothing(),
@@ -94,7 +94,7 @@ func CreateTeamFormTeamNameBehavior(bot tg.Bot, c domain.Community, f forms.Form
 	)
 }
 
-func Tree(bot tg.Bot, c domain.Community, f forms.Forms) hsm.Spec {
+func Tree(bot tg.Bot, c domain.Community, f forms.Forms, frontendURL string) hsm.Spec {
 	return hsm.Node(
 		"root",
 		hsm.CoreBehavior(
@@ -108,7 +108,7 @@ func Tree(bot tg.Bot, c domain.Community, f forms.Forms) hsm.Spec {
 			composition.Nothing(),
 		),
 		hsm.Group(
-			hsm.Leaf("onboarding", OnboardingBehavior(bot, c)),
+			hsm.Leaf("onboarding", OnboardingBehavior(bot, c, frontendURL)),
 			hsm.Leaf("main_menu", MainMenuBehavior(bot)),
 			hsm.Leaf("teams_menu", TeamsMenuBehavior(bot, c)),
 			hsm.Leaf("team_menu", TeamMenuBehavior(bot, c)),

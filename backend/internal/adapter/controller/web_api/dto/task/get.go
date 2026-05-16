@@ -17,17 +17,20 @@ func ToEntityGetTaskRequest(req *GetTaskRequest) *entity.TaskFilter {
 }
 
 type GetTaskResponse struct {
-	ID               int32   `json:"id"`
-	TeamID           int32   `json:"team_id"`
-	Title            string  `json:"title"`
-	Description      *string `json:"description,omitempty"`
-	Points           *int32  `json:"points,omitempty"`
-	Status           string  `json:"status"`
-	AssignedToMember *int32  `json:"assigned_to_member,omitempty"`
-	CreatedByMember  int32   `json:"created_by_member"`
-	CreatedByUser    int32   `json:"created_by_user"`
-	CreatedAt        string  `json:"created_at"`
-	UpdatedAt        *string `json:"updated_at,omitempty"`
+	ID               int32    `json:"id"`
+	TeamID           int32    `json:"team_id"`
+	Title            string   `json:"title"`
+	Description      *string  `json:"description,omitempty"`
+	Points           *int32   `json:"points,omitempty"`
+	Status           string   `json:"status"`
+	AssignedToMember *int32   `json:"assigned_to_member,omitempty"`
+	CreatedByMember  int32    `json:"created_by_member"`
+	CreatedByUser    int32    `json:"created_by_user"`
+	CreatedAt        string   `json:"created_at"`
+	UpdatedAt        *string  `json:"updated_at,omitempty"`
+	Tags             []string `json:"tags"`
+	Priority         string   `json:"priority"`
+	CommentCount     int32    `json:"comment_count"`
 }
 
 func ToGetTaskResponse(task *entity.Task) *GetTaskResponse {
@@ -39,6 +42,12 @@ func ToGetTaskResponse(task *entity.Task) *GetTaskResponse {
 		CreatedByMember: task.CreatedByMemberID,
 		CreatedByUser:   task.CreatedByUserID,
 		CreatedAt:       task.CreatedAt.Format("2006-01-02T15:04:05Z"),
+		Tags:            task.Tags,
+		Priority:        task.Priority,
+	}
+
+	if resp.Tags == nil {
+		resp.Tags = []string{}
 	}
 
 	if task.Points != nil {
@@ -57,6 +66,8 @@ func ToGetTaskResponse(task *entity.Task) *GetTaskResponse {
 		ts := task.UpdatedAt.Format("2006-01-02T15:04:05Z")
 		resp.UpdatedAt = &ts
 	}
+
+	resp.CommentCount = task.CommentCount
 
 	return resp
 }

@@ -7,17 +7,25 @@ import (
 
 func FromEntityToModelTeam(team entity.TeamEntity) team_model.Team {
 	return team_model.Team{
-		ID:        0,
-		Name:      team.Name,
-		CreatedBy: team.CreatedBy,
+		ID:         0,
+		Name:       team.Name,
+		CreatedBy:  team.CreatedBy,
+		Emoji:      team.Emoji,
+		Color:      team.Color,
+		Autoassign: team.Autoassign,
+		PhotoURL:   team.PhotoURL,
 	}
 }
 
 func FromModelToEntityTeam(team team_model.Team) entity.TeamEntity {
 	return entity.TeamEntity{
-		ID:        &team.ID,
-		Name:      team.Name,
-		CreatedBy: team.CreatedBy,
-		CreatedAt: &team.CreatedAt,
+		ID:         &team.ID,
+		Name:       team.Name,
+		CreatedBy:  team.CreatedBy,
+		CreatedAt:  &team.CreatedAt,
+		Emoji:      team.Emoji,
+		Color:      team.Color,
+		Autoassign: team.Autoassign,
+		PhotoURL:   team.PhotoURL,
 	}
 }

@@ -5,6 +5,8 @@ import "github.com/NikKazzzzzz/coopera-backend/internal/entity"
 type CreateTeamRequest struct {
 	UserID int32  `json:"user_id" validate:"required"`
 	Name   string `json:"name" validate:"required"`
+	Emoji  string `json:"emoji,omitempty"`
+	Color  string `json:"color,omitempty"`
 }
 
 type CreateTeamResponse struct {
@@ -12,12 +14,16 @@ type CreateTeamResponse struct {
 	Name      string `json:"name"`
 	CreatedAt string `json:"created_at"`
 	CreatedBy int32  `json:"created_by"`
+	Emoji     string `json:"emoji"`
+	Color     string `json:"color"`
 }
 
 func ToEntityCreateTeamRequest(req *CreateTeamRequest) *entity.TeamEntity {
 	return &entity.TeamEntity{
 		Name:      req.Name,
 		CreatedBy: req.UserID,
+		Emoji:     req.Emoji,
+		Color:     req.Color,
 	}
 }
 
@@ -27,5 +33,7 @@ func ToCreateTeamResponse(team *entity.TeamEntity) *CreateTeamResponse {
 		Name:      team.Name,
 		CreatedAt: team.CreatedAt.Format("2006-01-02T15:04:05Z"),
 		CreatedBy: team.CreatedBy,
+		Emoji:     team.Emoji,
+		Color:     team.Color,
 	}
 }

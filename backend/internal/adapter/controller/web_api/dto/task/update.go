@@ -3,12 +3,14 @@ package task
 import "github.com/NikKazzzzzz/coopera-backend/internal/entity"
 
 type UpdateTaskRequest struct {
-	CurrentUserID    int32   `json:"current_user_id" validate:"required"`
-	TaskID           int32   `json:"task_id" validate:"required"`
-	Title            *string `json:"title,omitempty" validate:"omitempty,min=1,max=255"`
-	Description      *string `json:"description,omitempty"`
-	Points           *int32  `json:"points,omitempty"`
-	AssignedToMember *int32  `json:"assigned_to_member,omitempty"`
+	CurrentUserID    int32     `json:"current_user_id" validate:"required"`
+	TaskID           int32     `json:"task_id" validate:"required"`
+	Title            *string   `json:"title,omitempty" validate:"omitempty,min=1,max=255"`
+	Description      *string   `json:"description,omitempty"`
+	Points           *int32    `json:"points,omitempty"`
+	AssignedToMember *int32    `json:"assigned_to_member,omitempty"`
+	Tags             *[]string `json:"tags,omitempty"`
+	Priority         *string   `json:"priority,omitempty" validate:"omitempty,oneof=low medium high"`
 }
 
 func ToEntityUpdateTaskRequest(req *UpdateTaskRequest) *entity.UpdateTask {
@@ -30,6 +32,14 @@ func ToEntityUpdateTaskRequest(req *UpdateTaskRequest) *entity.UpdateTask {
 
 	if req.AssignedToMember != nil {
 		task.AssignedToMember = req.AssignedToMember
+	}
+
+	if req.Tags != nil {
+		task.Tags = req.Tags
+	}
+
+	if req.Priority != nil {
+		task.Priority = req.Priority
 	}
 
 	return task
