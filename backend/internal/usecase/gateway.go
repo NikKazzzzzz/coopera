@@ -19,6 +19,7 @@ type UserRepository interface {
 	DeleteRepo(ctx context.Context, userID int32) error
 	GetRepo(ctx context.Context, opts ...any) (entity.UserEntity, error)
 	UpdateSettingsRepo(ctx context.Context, userID int32, wallpaper, customURL, theme string) error
+	UpdatePhotoURLRepo(ctx context.Context, userID int32, photoURL string) error
 }
 
 type TeamRepository interface {

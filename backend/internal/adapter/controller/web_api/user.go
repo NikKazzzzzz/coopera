@@ -79,15 +79,36 @@ func (uc *UserController) GetPhoto(w http.ResponseWriter, r *http.Request) error
 		return err
 	}
 
-	if user.PhotoURL == nil || *user.PhotoURL == "" {
-		http.NotFound(w, r)
-		return nil
+	var photoURL string
+	if user.PhotoURL != nil && *user.PhotoURL != "" {
+		photoURL = *user.PhotoURL
 	}
 
-	resp, err := photoClient.Get(*user.PhotoURL)
-	if err != nil || resp.StatusCode != http.StatusOK {
-		http.NotFound(w, r)
-		return nil
+	var resp *http.Response
+	if photoURL != "" {
+		resp, err = photoClient.Get(photoURL)
+		if err != nil || resp.StatusCode != http.StatusOK {
+			if resp != nil {
+				resp.Body.Close()
+			}
+			resp = nil
+		}
+	}
+
+	if resp == nil {
+		freshURL, refreshErr := uc.userUseCase.RefreshPhotoUsecase(r.Context(), int32(id))
+		if refreshErr != nil || freshURL == nil || *freshURL == "" {
+			http.NotFound(w, r)
+			return nil
+		}
+		resp, err = photoClient.Get(*freshURL)
+		if err != nil || resp.StatusCode != http.StatusOK {
+			if resp != nil {
+				resp.Body.Close()
+			}
+			http.NotFound(w, r)
+			return nil
+		}
 	}
 	defer resp.Body.Close()
 

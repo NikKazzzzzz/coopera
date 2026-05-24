@@ -35,9 +35,6 @@ func (uc *TaskUsecase) CreateUsecase(ctx context.Context, task entity.Task) (ent
 		}
 
 		isManager := currentMember.Role == entity.RoleManager
-		if !isManager && task.Points != nil {
-			return appErr.ErrOnlyManagerCanSetPoints
-		}
 
 		if task.AssignedToMember != nil {
 			if !isManager {
