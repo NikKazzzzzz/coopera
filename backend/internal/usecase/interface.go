@@ -12,6 +12,7 @@ type UserUseCase interface {
 	GetUsecase(ctx context.Context, opts ...any) (entity.UserEntity, error)
 	DeleteUsecase(ctx context.Context, userID int32) error
 	UpdateSettingsUsecase(ctx context.Context, userID int32, wallpaper, customURL, theme string) error
+	RefreshPhotoUsecase(ctx context.Context, userID int32) (*string, error)
 }
 
 type TeamUseCase interface {

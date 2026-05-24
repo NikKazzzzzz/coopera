@@ -74,3 +74,7 @@ func (ur *UserRepository) GetRepo(ctx context.Context, opts ...any) (entity.User
 func (ur *UserRepository) UpdateSettingsRepo(ctx context.Context, userID int32, wallpaper, customURL, theme string) error {
 	return ur.UserDAO.UpdateSettings(ctx, userID, wallpaper, customURL, theme)
 }
+
+func (ur *UserRepository) UpdatePhotoURLRepo(ctx context.Context, userID int32, photoURL string) error {
+	return ur.UserDAO.UpdatePhotoURL(ctx, userID, photoURL)
+}

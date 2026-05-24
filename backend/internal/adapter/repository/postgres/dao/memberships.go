@@ -95,10 +95,6 @@ func (r *MembershipDAO) GetMembers(ctx context.Context, teamID int32) ([]entity.
 		members = append(members, converter.FromModelToEntityMembership(m))
 	}
 
-	if len(members) == 0 {
-		return nil, repoErr.ErrNotFound
-	}
-
 	return members, nil
 }
 

@@ -86,3 +86,37 @@ func (uc *UserUsecase) UpdateSettingsUsecase(ctx context.Context, userID int32, 
 		return uc.userRepository.UpdateSettingsRepo(txCtx, userID, wallpaper, customURL, theme)
 	})
 }
+
+func (uc *UserUsecase) RefreshPhotoUsecase(ctx context.Context, userID int32) (*string, error) {
+	user, err := uc.GetUsecase(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	if user.TelegramID == nil {
+		return nil, nil
+	}
+
+	if uc.photoFetcher == nil {
+		return nil, nil
+	}
+
+	newURL, err := uc.photoFetcher.GetPhotoURL(*user.TelegramID)
+	if err != nil {
+		log.Printf("tgphoto refresh warning (user %d): %v", *user.TelegramID, err)
+		return nil, nil
+	}
+
+	if newURL == "" {
+		return nil, nil
+	}
+
+	updateErr := uc.txManager.WithinTransaction(ctx, func(txCtx context.Context) error {
+		return uc.userRepository.UpdatePhotoURLRepo(txCtx, userID, newURL)
+	})
+	if updateErr != nil {
+		log.Printf("photo_url DB update warning (user %d): %v", userID, updateErr)
+	}
+
+	return &newURL, nil
+}

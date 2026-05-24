@@ -310,3 +310,19 @@ func (ur *UserRepository) UpdateSettings(ctx context.Context, userID int32, wall
 	}
 	return nil
 }
+
+func (ur *UserRepository) UpdatePhotoURL(ctx context.Context, userID int32, photoURL string) error {
+	const query = `
+		UPDATE coopera.users
+		SET photo_url = $1
+		WHERE id = $2
+	`
+	tx, ok := ctx.Value(postgres.TransactionKey{}).(postgres.Transaction)
+	if !ok {
+		return repoErr.ErrTransactionNotFound
+	}
+	if _, err := tx.Exec(ctx, query, photoURL, userID); err != nil {
+		return fmt.Errorf("%w: %v", repoErr.ErrFailUpdate, err)
+	}
+	return nil
+}
